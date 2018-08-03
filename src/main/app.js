@@ -1,6 +1,18 @@
 const Discord = require("discord.js");
+const ytdl = require("ytdl-core");
+const request = require("request");
+const getYoutubeID = require("get-youtube-id");
+const fetchVideoInfo = require("youtube-info");
+const ffmpeg = require('fluent-ffmpeg');
+const WitSpeech = require('node-witai-speech');
+//const decode = require('../interpreter/decodeOpus.js');
+const fs = require('fs');
+const path = require('path');
+/*const opus = require('node-opus');*/
+const Youtube = require("../media/youtube/youtube.js")
 const Inter= require("../interpreter/interpreter.js");
 let interpreter = new Inter();
+let youtube = new Youtube();
 var voiceConnection;
 
 // getting the service (bot)
@@ -12,9 +24,7 @@ const config = require("./config.json");
 client.on("ready", () => {
   // This event will run if the bot starts, and logs in, successfully.
   console.log(`Bot has started, with ${client.users.size} users, in ${client.channels.size} channels of ${client.guilds.size} guilds.`); 
-  // Example of changing the bot's playing game to something useful. `client.user` is what the
-  // docs refer to as the "ClientUser".
-  client.user.setActivity(`Serving ${client.guilds.size} servers`);
+  client.user.setActivity(`using ${client.guilds.size} servers to conquer the world`);
 });
 
 client.on("guildCreate", guild => {
@@ -32,7 +42,6 @@ client.on("guildDelete", guild => {
 
 client.on("message", async message => {
   // This event will run on every single message received, from any channel or DM.
-  //
   if(message.author.bot) return;
 
   // Also good practice to ignore any message that does not start with our prefix, 
@@ -164,6 +173,9 @@ client.on("message", async message => {
   }
   if(command === "pcstop"){
     voiceConnection.destroy();
+  }
+  if(command === "ytplay"){
+    youtube.play(args[0],message);
   }
   
 //---------------------------------------------------------------------------------------------------------------------------------------------------------------------
