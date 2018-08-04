@@ -12,7 +12,7 @@ const path = require('path');
 const Youtube = require("../media/youtube/youtube.js")
 const Inter= require("../interpreter/interpreter.js");
 let interpreter = new Inter();
-let youtube = new Youtube();
+
 var voiceConnection;
 
 // getting the service (bot)
@@ -20,6 +20,8 @@ const client = new Discord.Client();
 
 // Loading the bot token and prefig
 const config = require("./config.json");
+
+let youtube = new Youtube(config.yt_api_key);
 
 client.on("ready", () => {
   // This event will run if the bot starts, and logs in, successfully.
@@ -175,7 +177,7 @@ client.on("message", async message => {
     voiceConnection.destroy();
   }
   if(command === "ytplay"){
-    youtube.play(args[0],message);
+    youtube.play(message,args[0],message.member);
   }
   
 //---------------------------------------------------------------------------------------------------------------------------------------------------------------------

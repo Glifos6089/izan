@@ -1,4 +1,5 @@
 required modules:
+npm install get-youtube-id
 npm install --save ytdl-core 
 npm install apus
 npm install request
