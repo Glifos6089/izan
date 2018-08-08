@@ -14,3 +14,4 @@ npm install node-witai-speech
 npm install --global --production windows-build-tools (admin)
 npm install node-opus
 npm install -g node-gyp
+npm install ms-bing-speech-service
