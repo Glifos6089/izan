@@ -179,6 +179,15 @@ client.on("message", async message => {
   if(command === "ytplay"){
     youtube.play(message,args[0],message.member);
   }
+  if(command === "ytpause"){
+    youtube.pause();
+  }
+  if(command === "ytunpause"){
+    youtube.unpause();
+  }
+  if(command === "ytskip"){
+    youtube.unpause();
+  }
   
 //---------------------------------------------------------------------------------------------------------------------------------------------------------------------
 });

@@ -1,3 +1,7 @@
+required programs:
+discord, node.js
+how to start:
+run app.js with node
 required modules:
 npm install get-youtube-id
 npm install --save ytdl-core 

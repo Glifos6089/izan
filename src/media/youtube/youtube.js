@@ -22,6 +22,9 @@ module.exports = class Youtube {
         if (arg.toLowerCase().indexOf("youtube.com") > -1) {
             return true;
         }
+        else if (arg.toLowerCase().indexOf("youtu.be") > -1) {
+            return true;
+        }
         else {
             return false;
         }
@@ -35,22 +38,22 @@ module.exports = class Youtube {
                 cb(id);
             });
         }
-               
+
     }
     getID2(str) {
         let cb;
         if (this.isYoutube(str)) {
-            cb=this.getYoutubeID(str);
+            cb = this.getYoutubeID(str);
         }
         else {
             this.search_video(str, function (id) {
-                cb=id;
+                cb = id;
             });
         }
         return cb;
-               
+
     }
-    getIDModified(str){
+    getIDModified(str) {
         let id = this.getID2(str);
         if (id == null) {
             textChannel.send("Sorry, no search results turned up");
@@ -89,6 +92,7 @@ module.exports = class Youtube {
     }
     play(message, args, member) {
         this.textChannel = message.channel;
+        this.voiceChannel = message.voiceChannel;
         if (this.isYoutube(args)) {
             if (!member.voiceChannel) {
                 return;
@@ -103,35 +107,56 @@ module.exports = class Youtube {
             message.channel.send("No valid search criteria");
         }
     }
+    pause() {
+        if (dispatcher) {
+            dispatcher.pause();
+        }
+    }
+    unpause() {
+        if (dispatcher) {
+            dispatcher.resume();
+        }
+    }
+    skip() {
+        if (queue.length > 0) {
+            if (dispatcher) {
+                dispatcher.end();
+            }
+            textChannel.send("Skipping current song!");
+        }
+    }
     playMusic(id) {
         console.log(id);
         //voiceChannel = message.member.voiceChannel;
-        voiceChannel.join().then(function (connection) {
-            console.log("playing");
-            let stream = ytdl("https://www.youtube.com/watch?v=" + id, {
-                filter: 'audioonly'
-            });
-            skipReq = 0;
-            skippers = [];
-            dispatcher = connection.playStream(stream);
-            this.fetchVideoInfo(id, function (err, videoInfo) {
-                if (err) throw new Error(err);
-                textChannel.send("Now playing **" + videoInfo.title + "**");
-            });
-            dispatcher.on('end', function () {
-                dispatcher = null;
-                queue.shift();
-                console.log("queue size: " + queue.length);
-                if (queue.length === 0) {
-                    queue = [];
-                    isPlaying = false;
-                }
-                else {
-                    setTimeout(function () {
-                        playMusic(queue[0]);
-                    }, 2000);
-                }
-            })
+        voiceChannel.join();
+        let connection = voiceChannel.connection;
+        console.log("playing");
+        let stream = ytdl("https://www.youtube.com/watch?v=" + id, {
+            filter: 'audioonly'
+        });
+        skipReq = 0;
+        this.skippers = [];
+        dispatcher = connection.playStream(stream);
+        console.log(id);
+        let videoInfo = fetchVideoInfo(id, function () {
+            return videoInfo;
+        });
+        console.log(videoInfo);
+
+        //this.textChannel.send("Now playing **" + this.videoInfo.title + "**");
+        dispatcher.on('end', function () {
+            dispatcher = null;
+            queue.shift();
+            console.log("queue size: " + queue.length);
+            if (queue.length === 0) {
+                queue = [];
+                isPlaying = false;
+            }
+            else {
+                setTimeout(function () {
+                    playMusic(queue[0]);
+                }, 2000);
+            }
         });
     }
     playRequest(args) {
@@ -142,10 +167,12 @@ module.exports = class Youtube {
                 }
                 else {
                     this.add_to_queue(id);
-                    this.fetchVideoInfo(id, function (err, videoInfo) {
-                        if (err) throw new Error(err);
-                        textChannel.send("Added to queue **" + videoInfo.title + "**");
+                    let videoInfo = this.fetchVideoInfo(id, function (callback) {
+                        //if (err) throw new Error(err);
+                        return callback;
                     });
+                    console.log(videoInfo);
+                    textChannel.send("Added to queue **" + videoInfo.title + "**");
                 }
             });
         }
@@ -153,7 +180,7 @@ module.exports = class Youtube {
             this.getIDModified(args);
         }
     }
-    
+
     getYoutubeID(url) {
         var match = url.match(/v=([0-9a-z_-]{1,20})/i);
         console.log(match ? match['1'] : false)
