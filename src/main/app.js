@@ -140,14 +140,22 @@ async function main() {
     }
     
     if(command === "purge") {
+      /*message.channel.send(message.member.roles.some(r=>["admin"].includes(r.name))); 
+      if(!message.member.roles.some(r=>["admin"].includes(r.name))||!message.member.roles.some(r=>["Quiroz-sama"].includes(r.name)) ){
+      message.channel.send("roles XD \n"+message.member.roles);
+      console.log(message.member.roles);
+      message.channel.send("name XD \n"+message.member.roles.name);
+      console.log(message.member.roles.name);
+        return message.reply("Sorry, you don't have permissions to use this!");
+      }*/
       // This command removes all messages from all users in the channel, up to 100.
       
       // get the delete count, as an actual number.
-      const deleteCount = parseInt(args[0], 10);
+      const deleteCount = parseInt(args[0]);
       
       // Ooooh nice, combined conditions. <3
-      if(!deleteCount || deleteCount < 2 || deleteCount > 100)
-        return message.reply("Please provide a number between 2 and 100 for the number of messages to delete");
+      if(!deleteCount || deleteCount < 2)
+        return message.reply("Please provide a number greather than 1 and lower than 101");
       
       // So we get our messages, and delete them. Simple enough, right?
       const fetched = await message.channel.fetchMessages({limit: deleteCount});
